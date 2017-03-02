@@ -35,18 +35,23 @@ class Listener(Thread):
         payload = json.loads(payload)
         message = Message(payload)
         receiver = message.receiver
+        sender = message.sender
         if receiver not in self.messages:
-            self.messages[receiver] = []
-        self.messages[receiver].append(message)
+            self.messages[receiver] = {}
+        if sender not in self.messages[receiver]:
+            self.messages[receiver][sender] = []
+        self.messages[receiver][sender].append(message)
 
-    def getPendingMessages(self, receiver):
+    def getPendingMessages(self, receiver, sender):
         # Retrieve all messages that have reached 
         # since last call. Then clear dict, so 
         # that overhead is not big
         if receiver not in self.messages:
             return []
-        messages = self.messages[receiver]
-        self.messages[receiver] = []
+        if sender not in self.messages[receiver]:
+            return []
+        messages = self.messages[receiver][sender]
+        self.messages[receiver][sender] = []
         return messages
 
     def run(self):

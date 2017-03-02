@@ -3,6 +3,22 @@
 
 {% block content %}
 
-<h4>You have entered the chatroom as {{ username }}</h4>
+    <h4>You are logged in as {{ username }}, and are chatting with {{ receiver }}</h4>
+    <ul id="messages">
+        
+    </ul>
+    <form>
+        <input type="text" class="form-control col-sm-6" placeholder="Enter message to send" id="input-msg" required autofocus>
+        <input type="submit" id="send" class="btn btn-primary col-sm-3" value="Send">
+    </form>
+
+{% endblock %}
+
+{% block js %}
+    <script>
+        var username = "{{username}}";
+        var receiver = "{{receiver}}";
+    </script>
+    <script src="{% static 'js/chatroom.js' %}"></script>
 
 {% endblock %}

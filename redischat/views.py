@@ -25,8 +25,10 @@ def landing(request):
 def chatroom(request):
     # View to show chatroom
     username = request.POST.get("username", "")
+    receiver = request.POST.get("receiver", "")
     params = {}
     params['username'] = username
+    params['receiver'] = receiver
     return render(request, "chatroom.html", params)
 
 
@@ -58,17 +60,22 @@ def sendMessage(request):
     message = request.GET.get('message')
     sender = request.GET.get('sender')
     receiver = request.GET.get('receiver')
+    time = dt.strftime(dt.now(), "%Y-%m-%d %H:%M:%S")
     queue = CHANNEL_NAME
     payload = {
         "message": message,
         "sender": sender,
         "receiver": receiver,
-        "time": dt.strftime(dt.now(), "%Y-%m-%d %H:%M:%S.%f")
+        "time": time
     }
     payload_json = json.dumps(payload)
     r = redis.Redis()
     r.publish(CHANNEL_NAME, payload_json)
-    return HttpResponse("Message: {0} has been sent to Redis Queue {1}".format(message, queue))
+    response = {}
+    response['success'] = "1"
+    response["time"] = time
+    response = json.dumps(response)
+    return HttpResponse("{0}".format(response))
 
 def getPendingMessages(request):
     # API endpoint to get all pending messages
@@ -77,7 +84,17 @@ def getPendingMessages(request):
     global LISTENER
 
     user = request.GET.get('user')
-    messages = LISTENER.getPendingMessages(user)
-    bodies = [x.body for x in messages]
+    sender = request.GET.get('sender')
+    messages = LISTENER.getPendingMessages(user, sender)
+    response = {}
+    response['messages'] = []
+    for item in messages:
+        message = {}
+        message['sender'] = item.sender
+        message['receiver'] = item.receiver
+        message['body'] = item.body
+        message['date'] = item.date
+        response['messages'].append(message)
+    response = json.dumps(response)
 
-    return HttpResponse("Messages received: {0}".format(bodies))
+    return HttpResponse("{0}".format(response))
