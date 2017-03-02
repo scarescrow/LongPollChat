@@ -14,9 +14,28 @@ def hello(request):
     # Test API endpoint to check if server is running
     return HttpResponse("Hello world, You've successfully reached Django")
 
+def test_js(request):
+    # Test API endpoint to make sure jQuery is working
+    return render(request, "test_js.html")
+
+def landing(request):
+    # View to show the landing page
+    return render(request, "landing.html")
+
+def chatroom(request):
+    # View to show chatroom
+    username = request.POST.get("username", "")
+    params = {}
+    params['username'] = username
+    return render(request, "chatroom.html", params)
+
+
 def startClient(request):
     # API endpoint to start listener for redis
     global CHANNEL_NAME, LISTENER
+
+    if LISTENER != None:
+        return HttpResponse("Client is already running")
 
     LISTENER = Listener(CHANNEL_NAME)
     LISTENER.start()
@@ -25,9 +44,10 @@ def startClient(request):
 
 def stopClient(request):
     # API endpoint to stop listener for redis
-    global CHANNEL_NAME
+    global CHANNEL_NAME, LISTENER
     r = redis.Redis()
     r.publish(CHANNEL_NAME, "KILL")
+    LISTENER = None
     return HttpResponse("Client Stopped successfully")
 
 def sendMessage(request):

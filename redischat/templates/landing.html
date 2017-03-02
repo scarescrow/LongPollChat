@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block css %}
+
+    <style type="text/css">
+        .form-elements {
+            margin-top: 40px;
+        }
+        #submit {
+            margin-top: 10px;
+        }
+    </style>
+
+{% endblock %}
+
+{% block content %}
+
+    <h3>Welcome to RedisChat</h3>
+    <div class="form">
+        <form action="chatroom" method="post">
+            {% csrf_token %}
+            <div class="form-elements">
+                <label for="chatName" class="sr-only">Chat Name</label>
+                <input class="form-control" type="text" name="username" placeholder="Enter your chat name" required autofocus/>
+                <input type="submit" id="submit" class="btn btn-primary" value="Enter Chat Room"/>
+            </div>
+        </form>
+    </div>
+
+{% endblock %}
