@@ -50,8 +50,10 @@ class Listener(Thread):
             return []
         if sender not in self.messages[receiver]:
             return []
-        messages = self.messages[receiver][sender]
-        self.messages[receiver][sender] = []
+        messages = self.messages[receiver][sender][:]
+        # self.messages[receiver][sender] = []
+        for m in messages[:]:
+            self.messages[receiver][sender].remove(m)
         return messages
 
     def run(self):

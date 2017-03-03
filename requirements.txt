@@ -1,0 +1,9 @@
+appdirs==1.4.2
+Django==1.10.6
+django-bootstrap3==8.2.1
+gevent==1.2.1
+greenlet==0.4.12
+packaging==16.8
+pyparsing==2.1.10
+redis==2.10.5
+six==1.10.0

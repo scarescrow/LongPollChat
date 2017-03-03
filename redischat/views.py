@@ -2,6 +2,7 @@ from django.shortcuts import render
 from django.http import HttpResponse
 import redis, json
 from datetime import datetime as dt
+import time
 
 from .models import Message, Listener
 
@@ -85,7 +86,11 @@ def getPendingMessages(request):
 
     user = request.GET.get('user')
     sender = request.GET.get('sender')
-    messages = LISTENER.getPendingMessages(user, sender)
+    while True:
+        messages = LISTENER.getPendingMessages(user, sender)
+        if len(messages) > 0:
+            break
+        time.sleep(1)
     response = {}
     response['messages'] = []
     for item in messages:
